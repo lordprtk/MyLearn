@@ -17,8 +17,14 @@ public class Factory {
 	}
 	
 	public static void main(String[] args){
-		ObjectClass object = getInstance(1);
-		object.print();
-		object.print("This is going to print");
+		for(int i=1;i<=5;i++){
+			ObjectClass object = getInstance(i);
+			if(null != object){
+				object.print();
+				object.print("This is going to print");
+			}else{
+				System.out.println("No class selected");
+			}
+		}
 	}
 }
