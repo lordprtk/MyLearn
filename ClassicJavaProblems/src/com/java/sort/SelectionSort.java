@@ -6,6 +6,10 @@ import java.util.Arrays;
  * The selection sort algorithm sorts an array by repeatedly finding 
  * the minimum element (considering ascending order) from unsorted part 
  * and putting it at the beginning.
+ * Time Complexity: O(n*n) as there are two nested loops.
+ * Auxiliary Space: O(1)
+ * The good thing about selection sort is it never makes more than O(n) swaps 
+ * and can be useful when memory write is a costly operation.
 */
 public class SelectionSort {
 	public static void main(String[] args) {
