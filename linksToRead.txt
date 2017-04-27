@@ -1,0 +1,43 @@
+http://www.geeksforgeeks.org/longest-common-prefix-set-3-divide-and-conquer/
+
+http://www.geeksforgeeks.org/divide-and-conquer-set-7-the-skyline-problem/
+http://www.geeksforgeeks.org/divide-and-conquer-set-6-tiling-problem/
+
+http://www.geeksforgeeks.org/top-10-algorithms-in-interview-questions/
+http://www.geeksforgeeks.org/top-algorithms-and-data-structures-for-competitive-programming/
+
+INVERSION COUNT RELATED:
+http://www.geeksforgeeks.org/count-inversions-in-an-array-set-2-using-self-balancing-bst/
+http://www.geeksforgeeks.org/count-inversions-array-set-3-using-bit/
+
+counting sort
+
+http://www.geeksforgeeks.org/java/
+
+Concepts
+Bit Manipulation
+Singleton Design Pattern
+Factory Design Pattern
+Memory (Stack vs Heap)
+Recursion
+Big-O Time
+
+
+Data Structures 
+Linked Lists 
+Binary Trees 
+Tries 
+Stacks
+Queues
+Vectors / ArrayLists 
+Hash Tables
+
+
+Algorithms
+Breadth First Search 
+Depth First Search 
+Binary Search 
+Merge Sort 
+Quick Sort 
+Tree Insert / Find / etc 
+Hash Tables
