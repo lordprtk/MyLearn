@@ -41,3 +41,5 @@ Merge Sort
 Quick Sort 
 Tree Insert / Find / etc 
 Hash Tables
+
+micro service architecture as is used in amazon
