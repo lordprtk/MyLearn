@@ -21,6 +21,8 @@ public class Transaction implements Comparable<Transaction>{
 	private Date redemptionDate_1;
 	private BigDecimal redeemedUnits_2;
 	private Date redemptionDate_2;
+	private BigDecimal redeemedUnits_3;
+	private Date redemptionDate_3;
 	private BigDecimal currentStatus;
 	private BigDecimal returnPerc;
 
@@ -133,5 +135,17 @@ public class Transaction implements Comparable<Transaction>{
 	}
 	public void setReturnPerc(BigDecimal returnPerc) {
 		this.returnPerc = returnPerc;
+	}
+	public BigDecimal getRedeemedUnits_3() {
+		return redeemedUnits_3;
+	}
+	public void setRedeemedUnits_3(BigDecimal redeemedUnits_3) {
+		this.redeemedUnits_3 = redeemedUnits_3;
+	}
+	public Date getRedemptionDate_3() {
+		return redemptionDate_3;
+	}
+	public void setRedemptionDate_3(Date redemptionDate_3) {
+		this.redemptionDate_3 = redemptionDate_3;
 	}
 }

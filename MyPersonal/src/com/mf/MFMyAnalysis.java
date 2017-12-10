@@ -40,11 +40,12 @@ public class MFMyAnalysis {
 	private CellStyle oddDataRowDate = null;
 	private CellStyle evenDataRowDate = null;
 	private CellStyle totalDataRow = null;
+	private CellStyle negativeData = null;
 	
 	public static void main(String[] args){
 		try{
 			MFMyAnalysis myAnalysis = new MFMyAnalysis();
-			XSSFWorkbook workbook = new XSSFWorkbook(new File("c:\\myreads\\mftest.xlsx"));
+			XSSFWorkbook workbook = new XSSFWorkbook(new File("/Users/prafali/root/MyLearn/trunk/MyPersonal/MFTest.xlsx"));
 			XSSFSheet sheetInvested = workbook.getSheet("Invested");
 			XSSFSheet sheetShifi = workbook.getSheet("InvestedShifi");
 			Map<FundFamily, Map<FundDetails, List<Transaction>>> familyMap = new HashMap<FundFamily, Map<FundDetails,List<Transaction>>>();
@@ -52,7 +53,7 @@ public class MFMyAnalysis {
 			Map<FundFamily, Map<FundDetails, List<Transaction>>> familyMapShifi = new HashMap<FundFamily, Map<FundDetails,List<Transaction>>>();
 			myAnalysis.readInvestments(familyMapShifi, sheetShifi);
 			
-			XSSFSheet sheetLatestNAV = workbook.getSheet("LatestNAV");
+			XSSFSheet sheetLatestNAV = workbook.getSheet("LatestNAV - Table 1");
 			Map<String, CurrentNAV> mapNAV = new HashMap<String, CurrentNAV>();
 			myAnalysis.readCurrentNAV(mapNAV, sheetLatestNAV);
 			
@@ -238,6 +239,8 @@ public class MFMyAnalysis {
 			tr.setRedemptionDate_1(null);
 			tr.setRedeemedUnits_2(null);
 			tr.setRedemptionDate_2(null);
+			tr.setRedeemedUnits_3(null);
+			tr.setRedemptionDate_3(null);
 			tr.setInvestmentCost(tr.getAmount());
 			tr.setCurrrentVal(tr.getUnitsStillHolding().multiply(currentNav.getLatestNAV()).setScale(2, RoundingMode.HALF_EVEN));
 		}else if(tr.getTransactionType() == TransactionType.SELL){
@@ -246,6 +249,8 @@ public class MFMyAnalysis {
 			tr.setRedemptionDate_1(null);
 			tr.setRedeemedUnits_2(null);
 			tr.setRedemptionDate_2(null);
+			tr.setRedeemedUnits_3(null);
+			tr.setRedemptionDate_3(null);
 			BigDecimal units = new BigDecimal(tr.getUnits().toPlainString());
 			for(Transaction pTr : processed){
 				if(units.compareTo(ZERO_VAL) > 0){
@@ -268,6 +273,9 @@ public class MFMyAnalysis {
 							}else if(null == pTr.getRedeemedUnits_2()){
 								pTr.setRedeemedUnits_2(redeemedUnits);
 								pTr.setRedemptionDate_2(tr.getDate());
+							}else if(null == pTr.getRedeemedUnits_3()){
+								pTr.setRedeemedUnits_3(redeemedUnits);
+								pTr.setRedemptionDate_3(tr.getDate());
 							}
 						}
 					}
@@ -331,17 +339,17 @@ public class MFMyAnalysis {
 			}
 		}
 		row = sheet.createRow(rowNum++);
-		Cell cell = getCell(row, 2, "T", false);
+		Cell cell = getCell(row, 3, "T", false);
 		cell.setCellValue(netRedeemedAmt.doubleValue());
-		cell = getCell(row, 4, "T", false);
+		cell = getCell(row, 5, "T", false);
 		cell.setCellValue(netInvestment.doubleValue());
-		cell = getCell(row, 7, "T", false);
-		cell.setCellValue(netCurrentValue.doubleValue());
 		cell = getCell(row, 8, "T", false);
-		cell.setCellValue(netUnbookedProfit.doubleValue());
+		cell.setCellValue(netCurrentValue.doubleValue());
 		cell = getCell(row, 9, "T", false);
-		cell.setCellValue(netBookedProfit.doubleValue());
+		cell.setCellValue(netUnbookedProfit.doubleValue());
 		cell = getCell(row, 10, "T", false);
+		cell.setCellValue(netBookedProfit.doubleValue());
+		cell = getCell(row, 11, "T", false);
 		cell.setCellValue(netLastValue.doubleValue());
 		
 		BigDecimal change = netCurrentValue.subtract(netLastValue);
@@ -351,15 +359,15 @@ public class MFMyAnalysis {
 		}else{
 			str = "Difference - Profit "+change.abs().toPlainString();
 		}
-		cell = getCell(row, 11, "T", false);;
+		cell = getCell(row, 12, "T", false);;
 		cell.setCellValue(str);
 		row = sheet.createRow(rowNum++);
+		cell = getCell(row, 10, "T", false);
 		cell = getCell(row, 9, "T", false);
-		cell = getCell(row, 8, "T", false);
 		CellStyle cellStyle = cell.getCellStyle();
 		cellStyle.setAlignment(CellStyle.ALIGN_CENTER);
 		cell.setCellStyle(cellStyle);
-		sheet.addMergedRegion(new CellRangeAddress(rowNum-1,rowNum-1,8,9));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum-1,rowNum-1,9,10));
 		cell.setCellValue(netBookedProfit.add(netUnbookedProfit).doubleValue());
 		writeFundTypeContrib(sheet, mapFundTypeContribs);
 	}
@@ -417,6 +425,8 @@ public class MFMyAnalysis {
 		Cell cell = getCell(row, cellNum++, type, false);
 		cell.setCellValue(summary.getFundName());
 		cell = getCell(row, cellNum++, type, false);
+		cell.setCellValue(summary.getFundType().getName());
+		cell = getCell(row, cellNum++, type, false);
 		cell.setCellValue(summary.getActualInvestment().doubleValue());
 		cell = getCell(row, cellNum++, type, false);
 		cell.setCellValue(summary.getRedeemedAmt().doubleValue());
@@ -434,9 +444,15 @@ public class MFMyAnalysis {
 		cell.setCellValue(summary.getCurrentVal().doubleValue());
 		cell = getCell(row, cellNum++, type, false);
 		if(null != summary.getUnbookedProfit()){
+			if(summary.getUnbookedProfit().compareTo(ZERO_VAL) < 0) {
+				cell.setCellStyle(negativeData);
+			}
 			cell.setCellValue(summary.getUnbookedProfit().doubleValue());
 		}
 		cell = getCell(row, cellNum++, type, false);
+		if(summary.getBookedProfit().compareTo(ZERO_VAL) < 0) {
+			cell.setCellStyle(negativeData);
+		}
 		cell.setCellValue(summary.getBookedProfit().doubleValue());
 		cell = getCell(row, cellNum++, type, false);
 		if(null != summary.getLastVal()){
@@ -452,6 +468,8 @@ public class MFMyAnalysis {
 		Integer cellNum = 0;
 		Cell cell = getCell(row, cellNum++, "H", false);
 		cell.setCellValue("Fund Name");
+		cell = getCell(row, cellNum++, "H", false);
+		cell.setCellValue("Fund Type");
 		cell = getCell(row, cellNum++, "H", false);
 		cell.setCellValue("Actual Investment");
 		cell = getCell(row, cellNum++, "H", false);
@@ -534,6 +552,15 @@ public class MFMyAnalysis {
 		cellStyle.setBorderLeft(XSSFCellStyle.BORDER_THIN);
 		cellStyle.setBorderRight(XSSFCellStyle.BORDER_THIN);
 		totalDataRow = cellStyle;
+		
+		cellStyle = (XSSFCellStyle)workBook.createCellStyle();
+		cellStyle.setFillPattern(XSSFCellStyle.SOLID_FOREGROUND );
+		cellStyle.setFillForegroundColor(new XSSFColor(new Color(250, 10, 10)));
+		cellStyle.setBorderBottom(XSSFCellStyle.BORDER_THIN);
+		cellStyle.setBorderTop(XSSFCellStyle.BORDER_THIN);
+		cellStyle.setBorderLeft(XSSFCellStyle.BORDER_THIN);
+		cellStyle.setBorderRight(XSSFCellStyle.BORDER_THIN);
+		negativeData = cellStyle;
 	}
 	
 	private void writeOutput(Map<FundFamily, Map<FundDetails, List<Transaction>>> familyMap, Map<FundFamily, AMCSummary> amcSummary, 
@@ -569,7 +596,7 @@ public class MFMyAnalysis {
 			rowNum+=2;
 			createAmcSummary(amcSummary.get(family), rowNum, sheet);
 		}
-		FileOutputStream fileOut = new FileOutputStream("c:\\myreads\\myanalysis_"+name+".xlsx");
+		FileOutputStream fileOut = new FileOutputStream("/Users/prafali/root/MyLearn/trunk/MyPersonal/"+name+".xlsx");
 		workOut.write(fileOut);
 		fileOut.close();
 		workOut.close();
@@ -616,6 +643,8 @@ public class MFMyAnalysis {
 			}
 		}else if(type.equals("T")){
 			cell.setCellStyle(totalDataRow);
+		}else if(type.equals("N")) {
+			cell.setCellStyle(negativeData);
 		}
 		return cell;
 	}
@@ -666,6 +695,14 @@ public class MFMyAnalysis {
 			cell.setCellValue(transaction.getRedemptionDate_2());
 		}
 		cell = getCell(row, cellNum++, type, false);
+		if(transaction.getRedeemedUnits_3() != null){
+			cell.setCellValue(transaction.getRedeemedUnits_3().doubleValue());
+		}
+		cell = getCell(row, cellNum++, type, true);
+		if(transaction.getRedemptionDate_3() != null){
+			cell.setCellValue(transaction.getRedemptionDate_3());
+		}
+		cell = getCell(row, cellNum++, type, false);
 		if(null != transaction.getCurrentStatus()){
 			cell.setCellValue(transaction.getCurrentStatus().doubleValue());
 		}
@@ -706,6 +743,10 @@ public class MFMyAnalysis {
 		cell = getCell(row, cellNum++, "H", false);
 		cell.setCellValue("Redemption Date 2");
 		cell = getCell(row, cellNum++, "H", false);
+		cell.setCellValue("Redeemed Unit 3");
+		cell = getCell(row, cellNum++, "H", false);
+		cell.setCellValue("Redemption Date 3");
+		cell = getCell(row, cellNum++, "H", false);
 		cell.setCellValue("Current Status");
 		cell = getCell(row, cellNum++, "H", false);
 		cell.setCellValue("Return %");
@@ -731,6 +772,9 @@ public class MFMyAnalysis {
 		case "Debt Long Term":
 			fund.setFundType(FundType.DEBTLONG);
 			break;
+		case "Debt MIP":
+			fund.setFundType(FundType.DEBTMIP);
+			break;
 		default:
 			throw new Exception("Unknown Fund Type");
 		}
@@ -753,8 +797,8 @@ public class MFMyAnalysis {
 		switch (fundFamily) {
 		case "ICICI Prudential":
 			return FundFamily.ICICI;
-		case "Birla Sun Life":
-			return FundFamily.Birla;
+		case "ABSL":
+			return FundFamily.ABSL;
 		case "DSP Blackrock":
 			return FundFamily.DSP;
 		case "HDFC":
@@ -763,6 +807,8 @@ public class MFMyAnalysis {
 			return FundFamily.Kotak;
 		case "Mirae Asset":
 			return FundFamily.Mirae;
+		case "Principal":
+			return FundFamily.Principal;
 		default:
 			throw new Exception("unknown Family");
 		}

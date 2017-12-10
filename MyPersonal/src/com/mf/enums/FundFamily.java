@@ -1,6 +1,7 @@
 package com.mf.enums;
 public enum FundFamily{
-		DSP("DSP Blackrock"), ICICI("ICICI Prudential"), Birla("Birla"), Mirae("Mirae Asset"), HDFC("HDFC"), Kotak("Kotak Mahindra");
+		DSP("DSP Blackrock"), ICICI("ICICI Prudential"), ABSL("ABSL"), Mirae("Mirae Asset"), HDFC("HDFC"),
+		Kotak("Kotak Mahindra"), Principal("Principal");
 		private final String code;
 		FundFamily(final String code){
 			this.code=code;
